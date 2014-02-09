@@ -5,7 +5,7 @@
  * @type {{iframeUrl: string, iframeID: string}}
  */
 var config = {
-    storageFrameURL: "",
+    storageFrameURL: "../build/storageFrame.html",
     storageFrameID: ""
 }
 
