@@ -5,7 +5,7 @@
  * @type {{iframeUrl: string, iframeID: string}}
  */
 var config = {
-    storageFrameURL: "../build/storageFrame.html",
+    storageFrameURL: "",
     storageFrameID: ""
 }
 
@@ -214,7 +214,7 @@ GlobalStorage.prototype._onDocumentReady = function(){
         return function(){
 
             // Don't call this more than once.
-            if(ctx._onFailCalled){
+            if(ctx.ready || ctx._onFailCalled){
                 return;
             }
             ctx._onFailCalled = true;
@@ -260,7 +260,7 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
             // Fulfil the deferred that was made on the transaction
             if(res.type==="GET"){
                 transaction.deferred["resolved"](res.value);
-            } else if(res.type==="SET"){
+            } else if(res.type==="SET" || res.type==="REMOVE"){
                 transaction.deferred["resolved"]();
             }
 
@@ -286,7 +286,7 @@ GlobalStorage.prototype._onStorageFrameReady = function(data){
     this._storageFrameReady = true;
 
     // Cancel the timeout that's called if the storage frame is not ready in 5 seconds
-    clearTimeout(this._timeoutForStorageFrameReady);
+    // clearTimeout(this._timeoutForStorageFrameReady);
 
     // Call checkReady to see if the storageFrame and document are both ready
     this._checkReady();
@@ -331,6 +331,14 @@ GlobalStorage.prototype._onReady = function(){
             this.getItem(transaction.key)["done"](function(deferred){
                 return function(result){
                     deferred["resolved"](result);
+                }
+            }(transaction.deferred));
+        } else if(transaction.type==="REMOVE"){
+
+            // Call get item again
+            this.removeItem(transaction.key)["done"](function(deferred){
+                return function(result){
+                    deferred["resolved"]();
                 }
             }(transaction.deferred));
         }
@@ -388,6 +396,34 @@ GlobalStorage.prototype.getItem = function(key){
     if(this.ready){
         this.iframeRef.contentWindow.postMessage(JSON.stringify({
             type: "GET",
+            key: key,
+            id: this._transactionID
+        }), "*");
+    }
+
+    return ret;
+}
+
+/**
+ * Similar to localStorage removeItem
+ * @param key
+ * @returns {Deferred}
+ */
+GlobalStorage.prototype.removeItem = function(key){
+    var ret = new Deferred();
+
+    // Add this to the transaction queue
+    this._transactions[++this._transactionID] = {
+        type: "REMOVE",
+        key: key,
+        deferred: ret
+    }
+
+    // If the storageFrame is ready, post the message now, otherwise
+    // this will be fired later
+    if(this.ready){
+        this.iframeRef.contentWindow.postMessage(JSON.stringify({
+            type: "REMOVE",
             key: key,
             id: this._transactionID
         }), "*");
