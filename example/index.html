@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../build/globalStorage.js"></script>
+    <script>
+        globalStorage.setItem("hello", "world").done(function(){
+            console.log("set the item");
+        }).fail(function(e){
+            console.log("failed: " + e);
+        })
+
+        globalStorage.setItem("hello", "world1").done(function(){
+            console.log("set the item");
+        }).fail(function(e){
+            console.log("failed: " + e);
+        })
+
+        globalStorage.getItem("hello").done(function(value){
+            console.log("Got: " + value);
+        }).fail(function(e){
+            console.log("failed: " + e);
+        })
+
+        globalStorage.getItem("empty").done(function(value){
+            console.log("'Empty' has no value: " + !value);
+        })
+    </script>
+</head>
+<body>
+    <!--<iframe id="childId" src="http://localhost:8000/build/storageFrame.html"/>-->
+</body>
+</html>
