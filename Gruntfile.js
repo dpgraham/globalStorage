@@ -34,7 +34,8 @@ module.exports = function(grunt){
                 options: {
                     process: function(content, srcpath){
                         var storageFrameJS = grunt.file.read('src/storageFrame/storageFrame.js');
-                        return content.replace("__STORAGEFRAMEJS__", storageFrameJS);
+                        content = content.replace("__STORAGEFRAMEJS__", storageFrameJS);
+                        return content.replace("__DOMAINS__", grunt.option("domains") || "");
                     }
                 }
             }

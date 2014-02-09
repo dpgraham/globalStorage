@@ -1,3 +1,7 @@
+var config = {
+    domain: "__DOMAINS__"
+}
+
 /**
  * StorageFrame.js
  *
@@ -5,7 +9,7 @@
  */
 
 // Send a generic ping message to the parent announcing that the iframe is ready
-window.parent.postMessage("ping", "*");
+window.parent.postMessage("ping", config.domain);
 
 // Bind to the onMessage calllback
 window.onmessage = function(e){
@@ -13,7 +17,7 @@ window.onmessage = function(e){
     // If it's a ping message, just send a ping message back to it
     if(e.data.indexOf("ping")===0){
 
-        window.parent.postMessage("ping", "*");
+        window.parent.postMessage("ping", config.domain);
 
     } else{
 
@@ -29,13 +33,13 @@ window.onmessage = function(e){
 
             // Get request. Get the result from localStorage and send it back.
             res.value = localStorage.getItem(data.key);
-            window.parent.postMessage(JSON.stringify(res), "*");
+            window.parent.postMessage(JSON.stringify(res), config.domain);
 
         } else if(data.type==="SET"){
 
             // Set request. Set the value and send back a message.
             localStorage.setItem(data.key, data.value);
-            window.parent.postMessage(JSON.stringify(res), "*");
+            window.parent.postMessage(JSON.stringify(res), config.domain);
         }
     }
 }
