@@ -1,12 +1,11 @@
 (function(){
 
 /**
- * Object that holds iframeURL and iframeID.
- * At least one of these must be defined.
+ * Object that holds iframeURL and iframeID. At least one of these must be defined.
  * @type {{iframeUrl: string, iframeID: string}}
  */
 var config = {
-    storageFrameURL: "http://localhost:8000/build/storageFrame.html",
+    storageFrameURL: "",
     storageFrameID: ""
 }
 
@@ -20,7 +19,7 @@ var Deferred = function(){
 }
 
 /**
- * Pushes a done callback to the callback queue.
+ * Pushes a callback to the callback queue.
  * @param cb {Function} Callback
  */
 Deferred.prototype["done"] = function(cb){
@@ -214,8 +213,8 @@ GlobalStorage.prototype._onDocumentReady = function(){
     var onFail = function(ctx){
         return function(){
 
-            // Don't call this more than once and don't call this if it's ready.
-            if(ctx.ready || ctx._onFailCalled){
+            // Don't call this more than once.
+            if(ctx._onFailCalled){
                 return;
             }
             ctx._onFailCalled = true;
@@ -238,12 +237,12 @@ GlobalStorage.prototype._onDocumentReady = function(){
 
 /**
  * Handler for receiving a message from storage frame
- * @param data {string} String passed by storage frame
+ * @param data
  * @private
  */
 GlobalStorage.prototype._onStorageFrameMessage = function(data){
 
-    // We received a message from the storage frame so call storageFrameReady()
+    // We received a message from the iframe (doesn't matter the content of the message). Call storageFrameReady()
     this._onStorageFrameReady();
 
     // Don't do anything if it's a ping.
@@ -252,7 +251,7 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
     } else {
         try {
 
-            // Parse the JSON data received from iframe
+            // Parse the data
             var res = JSON.parse(data);
 
             // Get the corresponding transaction
@@ -270,8 +269,6 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
 
         } catch(e){
 
-            // An exception occurred. Pass the message along.
-            transaction.deferred["rejected"](e);
         }
     }
 }
@@ -288,7 +285,7 @@ GlobalStorage.prototype._onStorageFrameReady = function(data){
     }
     this._storageFrameReady = true;
 
-    // Cancel the timeout that's called if the storage frame is not ready in 3 seconds
+    // Cancel the timeout that's called if the storage frame is not ready in 5 seconds
     clearTimeout(this._timeoutForStorageFrameReady);
 
     // Call checkReady to see if the storageFrame and document are both ready
