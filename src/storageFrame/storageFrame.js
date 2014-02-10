@@ -12,6 +12,11 @@ var config = {
  * This is the Javascript that is inlined into a script tag in 'assets/storageFrame.html'
  */
 
+// Throw an exception if no targetOrigin was provided
+if(!config.targetOrigin){
+    throw "You must provide a targetOrigin in the storageFrame"
+}
+
 // Send a generic ping message to the parent announcing that the iframe is ready
 window.parent.postMessage("ping", config.targetOrigin);
 

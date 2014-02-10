@@ -17,6 +17,25 @@ module.exports = function(grunt){
                         return content;
                     }
                 }
+            },
+
+            test: {
+                src: [
+                    'src/intro',
+                    'src/config.js',
+                    'src/deferred.js',
+                    'src/globalStorage.js',
+                    'src/test/deferred.test.js',
+                    'src/test/globalStorage.test.js',
+                    'src/outro'
+                ],
+                dest: 'tests/globalStorage.test.js',
+                options: {
+                    process: function(content, srcpath){
+                        content = content.replace("__iframeUrl__", "storageFrame.html");
+                        return content;
+                    }
+                }
             }
         },
 
@@ -36,6 +55,25 @@ module.exports = function(grunt){
                         var storageFrameJS = grunt.file.read('src/storageFrame/storageFrame.js');
                         content = content.replace("__STORAGEFRAMEJS__", storageFrameJS);
                         return content.replace("__DOMAINS__", grunt.option("targetOrigin") || "");
+                    }
+                }
+            },
+
+            test: {
+                files: [
+                    {
+                        cwd: 'assets',
+                        expand: true,
+                        src: "storageFrame.html",
+                        dest: "tests"
+                    }
+                ],
+
+                options: {
+                    process: function(content, srcpath){
+                        var storageFrameJS = grunt.file.read('src/storageFrame/storageFrame.js');
+                        content = content.replace("__STORAGEFRAMEJS__", storageFrameJS);
+                        return content.replace("__DOMAINS__", "*");
                     }
                 }
             }
