@@ -22,6 +22,7 @@ describe("done and fail called when resolved or rejected", function(){
         }
         def.done(cb1).done(cb2);
         setTimeout(function(def){
+            var val = 0;
             return function(){
                 def.resolved();
                 done();

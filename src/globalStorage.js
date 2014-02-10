@@ -108,7 +108,7 @@ GlobalStorage.prototype._bindStorageFrameMessage = function(){
 
     // If the iframeRef is there and has a contentWindow, send it a beacon
     if(this.iframeRef && this.iframeRef.contentWindow){
-        this.iframeRef.contentWindow.postMessage("ping");
+        this.iframeRef.contentWindow.postMessage("ping", this._targetOrigin);
     }
 }
 
@@ -249,6 +249,10 @@ GlobalStorage.prototype._onReady = function(){
     // Flag that we're ready to communicate with the iframe
     this.ready = true;
 
+    var iframeAsAnchor = document.createElement("a");
+    iframeAsAnchor.href = this.iframeRef.src;
+    this._targetOrigin = iframeAsAnchor.protocol + "//" + iframeAsAnchor.host;
+
     // Fire off any pending transactions
     for(var transaction in this._transactions){
         var transaction = this._transactions[transaction];
@@ -306,7 +310,7 @@ GlobalStorage.prototype.setItem = function(key, value){
             key: key,
             value: value,
             id: this._transactionID
-        }), "*");
+        }), this._targetOrigin);
     }
 
     return ret;
@@ -334,7 +338,7 @@ GlobalStorage.prototype.getItem = function(key){
             type: "GET",
             key: key,
             id: this._transactionID
-        }), "*");
+        }), this._targetOrigin);
     }
 
     return ret;
@@ -362,7 +366,7 @@ GlobalStorage.prototype.removeItem = function(key){
             type: "REMOVE",
             key: key,
             id: this._transactionID
-        }), "*");
+        }), this._targetOrigin);
     }
 
     return ret;
