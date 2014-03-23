@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" href="/node_modules/mocha/mocha.css"/>
+</head>
+<body>
+    <div id="mocha"><p><a href="../../tests">Index</a></p></div>
+    <div id="messages"></div>
+    <div id="fixtures"></div>
+    <script type="text/javascript" src="/app/bower_components/jquery/dist/jquery.js"></script>
+    <script src="/node_modules/mocha/mocha.js"></script>
+    <script src="/node_modules/chai/chai.js"></script>
+    <script type="text/javascript">
+        mocha.setup("tdd");
+    </script>
+    <script src="../../globalStorage.js"></script>
+    <script src="test_config.js"></script>
+    <script src="globalStorage.test.js"></script>
+    <script type="text/javascript">
+        if (typeof(mochaPhantomJS)!="undefined") {
+            mochaPhantomJS.run();
+        }
+        else {
+            mocha.run();
+        }
+    </script>
+</body>
+</html>

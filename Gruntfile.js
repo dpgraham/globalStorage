@@ -5,6 +5,7 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
     grunt.initConfig({
         concat: {
@@ -21,6 +22,7 @@ module.exports = function(grunt){
                     process: function(content, srcpath){
                         content = content.replace("__iframeUrl__", grunt.option("storageFrameURL") || "");
                         content = content.replace("__iframeID__", grunt.option("storageFrameID") || "");
+
                         return content;
                     }
                 }
@@ -38,23 +40,7 @@ module.exports = function(grunt){
                 options: {
                     process: function(content, srcpath){
                         content = content.replace("__iframeUrl__", "/tests/assets/storageFrame.html");
-                        return content;
-                    }
-                }
-            },
 
-            test_phantom: {
-                src: [
-                    'src/intro',
-                    'src/config.js',
-                    'src/deferred.js',
-                    'src/globalStorage.js',
-                    'src/outro'
-                ],
-                dest: 'tests/globalStorage.js',
-                options: {
-                    process: function(content, srcpath){
-                        content = content.replace("__iframeUrl__", "storageFrame.html");
                         return content;
                     }
                 }
@@ -94,27 +80,17 @@ module.exports = function(grunt){
                         content = content.replace(/__DOMAIN_ZERO__/g, "/");
                         content = content.replace(/__DOMAIN_ONE__/g, "/");
                         content = content.replace(/__DOMAIN_TWO__/g, "/");
-
+                        content = content.replace(/__PHANTOM__/g, false);
                         return content;
                     }
                 }
             },
 
             test_phantom: {
-                files: [
-                    {src: "assets/**/*.*", dest: "tests/"},
-                    {expand: false, src: "src/test/*.*", dest: "tests/"}
-                ],
-
+                files: [{src: "src/test/test_config.js", dest: "tests/"}],
                 options: {
-                    process: function(content, srcpath){
-                        var storageFrameJS = grunt.file.read('src/storageFrame/storageFrame.js');
-                        content = content.replace("__STORAGEFRAMEJS__", storageFrameJS);
-
-                        content = content.replace("__DOMAINS__", "*");
-                        content = content.replace("__DOMAIN_ZERO__", "http://localhost:9000/");
-                        content = content.replace("__DOMAIN_ONE__", "http://localhost:9001/");
-                        content = content.replace("__DOMAIN_TWO__", "http://localhost:9002/");
+                    process: function(content){
+                        content = content.replace(/__PHANTOM__/g, true);
                         return content;
                     }
                 }
@@ -140,11 +116,23 @@ module.exports = function(grunt){
                     port: 9002,
                     base: './'
                 }
+            },
+            site3: {
+                options: {
+                    port: 9003,
+                    base: './'
+                }
             }
         },
 
-        qunit: {
-            all: ["./tests/test.html"]
+        mocha_phantomjs: {
+            all: {
+                options: {
+                    urls: [
+                        'http://localhost:9003/tests/src/test/test.html'
+                    ]
+                }
+            }
         },
 
         watch: {
@@ -156,8 +144,9 @@ module.exports = function(grunt){
     });
 
     grunt.registerTask('default', ['copy', 'concat']);
-    grunt.registerTask('test_phantom', ['connect', 'copy:test_phantom', 'concat:test_phantom', 'qunit']);
     grunt.registerTask('test_build', ['copy:test', 'concat:test']);
+    grunt.registerTask('test_build_phantom', ['copy:test', 'concat:test', 'copy:test_phantom']);
+    grunt.registerTask('test_phantom', ['connect:site1', 'connect:site2', 'connect:site3', 'test_build_phantom', 'mocha_phantomjs']);
     grunt.registerTask('test_server', ['connect:site0']);
     grunt.registerTask('watchTest', []);
 
