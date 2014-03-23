@@ -69,6 +69,7 @@ window.onmessage = function(e){
             // Set request. Set the value and send back a message.
             localStorage.setItem(data.key, data.value);
             window.parent.postMessage(JSON.stringify(res), e.origin);
+
         } else if(data.type==="REMOVE"){
 
             // Remove request
