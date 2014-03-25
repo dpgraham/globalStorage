@@ -5,6 +5,7 @@ module.exports = function(grunt){
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-connect');
     grunt.loadNpmTasks('grunt-contrib-qunit');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
     grunt.initConfig({
@@ -152,15 +153,18 @@ module.exports = function(grunt){
                 files: ["src/**/*.js", "src/**/*.html"],
                 tasks: ['test_phantom']
             }
+        },
+
+        jshint: {
+            files: "src/*.js"
         }
     });
 
     grunt.registerTask('default', ['copy', 'concat']);
-    grunt.registerTask('test_build', ['copy:test', 'concat:test']);
-    grunt.registerTask('test_build_phantom', ['copy:test', 'concat:test', 'copy:test_phantom']);
-    grunt.registerTask('test_phantom', ['connect:site1', 'connect:site2', 'connect:site3', 'test_build_phantom', 'mocha_phantomjs']);
+    grunt.registerTask('test_build', ['jshint', 'copy:test', 'concat:test']);
+    grunt.registerTask('test_build_phantom', ['jshint', 'copy:test', 'concat:test', 'copy:test_phantom']);
+    grunt.registerTask('test_phantom', ['jshint', 'connect:site1', 'connect:site2', 'connect:site3', 'test_build_phantom', 'mocha_phantomjs']);
     grunt.registerTask('test_server', ['connect:site0']);
-    grunt.registerTask('watchTest', []);
     grunt.registerTask('travis', ['test_phantom']);
 
 }

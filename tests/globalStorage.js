@@ -7,7 +7,7 @@
 var config = {
     storageFrameURL: "http://localhost:9001/tests/assets/storageFrame.html", // URL of the iframe
     storageFrameID: "__iframeID__" // ID of the iframe tag
-}
+};
 
 /**
  * Deferred object that behaves similarly to jQuery deferred
@@ -16,49 +16,49 @@ var config = {
 var Deferred = function(){
     this._doneCallbacks = [];
     this._failCallbacks = [];
-}
+};
 
 /**
  * Pushes a callback to the callback queue.
  * @param cb {Function} Callback
  */
-Deferred.prototype["done"] = function(cb){
+Deferred.prototype.done = function(cb){
     this._doneCallbacks[this._doneCallbacks.length] = cb;
     return this;
-}
+};
 
 /**
  * Trigger that the deferred is 'fulfilled' and execute all the callbacks in the queue
  * @param result
  */
-Deferred.prototype["resolved"] = function(result){
+Deferred.prototype.resolved = function(result){
     for(var i=0; i<this._doneCallbacks.length; i++){
         this._doneCallbacks[i](result);
     }
 
     this._doneCallbacks = [];
-}
+};
 
 /**
  * Pushes a fail callback to the callback queue.
  * @param cb {Function} Callback
  */
-Deferred.prototype["fail"] = function(cb){
+Deferred.prototype.fail = function(cb){
     this._failCallbacks[this._failCallbacks.length] = cb;
     return this;
-}
+};
 
 /**
  * Trigger that the deferred is 'failed' and execute all the fail callbacks in the queue
  * @param result
  */
-Deferred.prototype["rejected"] = function(errorMsg){
+Deferred.prototype.rejected = function(errorMsg){
     for(var i=0; i<this._failCallbacks.length; i++){
         this._failCallbacks[i](errorMsg);
     }
 
     this._failCallbacks = [];
-}
+};
 
 
 
@@ -75,7 +75,7 @@ GlobalStorage = function(params){
     this._transactions = {}; // Caches all transactions
     this._bindStorageFrameMessage(); // Bind the HTML5 iframe onmessage event
     this._bindDocumentReady(); // Bind the documentReady event
-}
+};
 
 /**
  * Bind the document ready event. This was mostly lifted from JQuery
@@ -97,7 +97,7 @@ GlobalStorage.prototype._bindDocumentReady = function(){
             return function(){
                 document.removeEventListener( "DOMContentLoaded", arguments.callee, false );
                 ctx._onDocumentReady();
-            }
+            };
         }(this), false );
 
     } else if ( document.attachEvent ) {
@@ -109,7 +109,7 @@ GlobalStorage.prototype._bindDocumentReady = function(){
                     document.detachEvent( "onreadystatechange", arguments.callee );
                     ctx._onDocumentReady();
                 }
-            }
+            };
         }(this));
 
         // If IE and not an iframe continually check to see if the document is ready
@@ -128,7 +128,7 @@ GlobalStorage.prototype._bindDocumentReady = function(){
 
                 // and execute any waiting functions
                 ctx._onDocumentReady();
-            }
+            };
         })();
     }
 
@@ -136,9 +136,9 @@ GlobalStorage.prototype._bindDocumentReady = function(){
     window.onload = function(ctx){
         return function(){
             ctx._onDocumentReady();
-        }
+        };
     }(this);
-}
+};
 
 /**
  * Bind to the onmessage event
@@ -155,7 +155,7 @@ GlobalStorage.prototype._bindStorageFrameMessage = function(){
                 if(e.source==ctx.iframeRef.contentWindow){
                     ctx._onStorageFrameMessage(e.data);
                 }
-            }
+            };
         }(this));
 
     } else {
@@ -166,7 +166,7 @@ GlobalStorage.prototype._bindStorageFrameMessage = function(){
                 if(e.source==ctx.iframeRef.contentWindow){
                     ctx._onStorageFrameMessage(e.data);
                 }
-            }
+            };
         }(this));
     }
 
@@ -174,7 +174,7 @@ GlobalStorage.prototype._bindStorageFrameMessage = function(){
     if(this.iframeRef && this.iframeRef.contentWindow){
         this.iframeRef.contentWindow.postMessage("ping", this._targetOrigin);
     }
-}
+};
 
 /**
  * Callback when document is ready
@@ -199,7 +199,6 @@ GlobalStorage.prototype._onDocumentReady = function(){
         // If no storageFrameURL was provided, throw an exception
         if(!this._storageFrameURL){
             throw "You must provide a valid url for the storage frame or an id pointing to an iframe with the storage frame";
-            return;
         }
 
         // Create the iframe and append it to the body
@@ -221,19 +220,19 @@ GlobalStorage.prototype._onDocumentReady = function(){
 
             // Fire the error callbacks for any pending transactions
             for(var transaction in ctx._transactions){
-                var transaction = ctx._transactions[transaction];
-                transaction.deferred["rejected"]("Timed out waiting for storageFrame to load");
+                transaction = ctx._transactions[transaction];
+                transaction.deferred.rejected("Timed out waiting for storageFrame to load");
             }
 
             // Flag that globalStorage is unusable
             ctx._fail = true;
-        }
+        };
     }(this);
 
     // Start a five second timer that waits for the storage iframe to load
     this._timeoutForStorageFrameReady = setTimeout(onFail, 3000);
     window.onbeforeunload = onFail;
-}
+};
 
 /**
  * Handler for receiving a message from storage frame
@@ -259,9 +258,9 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
 
             // Fulfil the deferred that was made on the transaction
             if(res.type==="GET"){
-                transaction.deferred["resolved"](res.value);
+                transaction.deferred.resolved(res.value);
             } else if(res.type==="SET" || res.type==="REMOVE"){
-                transaction.deferred["resolved"](res.value);
+                transaction.deferred.resolved(res.value);
             }
 
             // Null out the transaction
@@ -271,7 +270,7 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
 
         }
     }
-}
+};
 
 /**
  * Callback when the storageFrame is ready
@@ -290,7 +289,7 @@ GlobalStorage.prototype._onStorageFrameReady = function(data){
 
     // Call checkReady to see if the storageFrame and document are both ready
     this._checkReady();
-}
+};
 
 /**
  * Checks if the document is ready and the storageFrame is ready before firing the ready event
@@ -302,7 +301,7 @@ GlobalStorage.prototype._checkReady = function(){
     if(this._storageFrameReady && this._documentReady){
         this._onReady();
     }
-}
+};
 
 /**
  * Fired when the storageFrame is ready and the document is ready.
@@ -313,42 +312,41 @@ GlobalStorage.prototype._onReady = function(){
     // Flag that we're ready to communicate with the iframe
     this.ready = true;
 
+    // Get the target origin (using the 'anchor tag' hack)
     var iframeAsAnchor = document.createElement("a");
     iframeAsAnchor.href = this.iframeRef.src;
     this._targetOrigin = iframeAsAnchor.protocol + "//" + iframeAsAnchor.host;
 
+
     // Fire off any pending transactions
+
+    var doneCallback = function(deferred){
+        return function(result){
+            deferred.resolved(result);
+        };
+    };
+
+
     for(var transaction in this._transactions){
-        var transaction = this._transactions[transaction];
+        transaction = this._transactions[transaction];
 
         if(transaction.type==="SET"){
 
             // Call set item again
-            this.setItem(transaction.key, transaction.value)["done"](function(deferred){
-                return function(){
-                    deferred["resolved"]();
-                }
-            }(transaction.deferred));
+            this.setItem(transaction.key, transaction.value).done(doneCallback(transaction.deferred));
 
         } else if(transaction.type==="GET"){
 
             // Call get item again
-            this.getItem(transaction.key)["done"](function(deferred){
-                return function(result){
-                    deferred["resolved"](result);
-                }
-            }(transaction.deferred));
+            this.getItem(transaction.key).done(doneCallback(transaction.deferred));
+
         } else if(transaction.type==="REMOVE"){
 
             // Call get item again
-            this.removeItem(transaction.key)["done"](function(deferred){
-                return function(result){
-                    deferred["resolved"]();
-                }
-            }(transaction.deferred));
+            this.removeItem(transaction.key).done(doneCallback(transaction.deferred));
         }
     }
-}
+};
 
 /**
  * Similar to localStorage 'setItem'
@@ -365,7 +363,7 @@ GlobalStorage.prototype.setItem = function(key, value){
         key: key,
         value: value,
         deferred: ret
-    }
+    };
 
     // If the storageFrame is ready, post the message now, otherwise
     // this will be fired later
@@ -379,7 +377,7 @@ GlobalStorage.prototype.setItem = function(key, value){
     }
 
     return ret;
-}
+};
 
 /**
  * Similar to localStorage getItem
@@ -394,7 +392,7 @@ GlobalStorage.prototype.getItem = function(key){
         type: "GET",
         key: key,
         deferred: ret
-    }
+    };
 
     // If the storageFrame is ready, post the message now, otherwise
     // this will be fired later
@@ -407,7 +405,7 @@ GlobalStorage.prototype.getItem = function(key){
     }
 
     return ret;
-}
+};
 
 /**
  * Similar to localStorage removeItem
@@ -422,7 +420,7 @@ GlobalStorage.prototype.removeItem = function(key){
         type: "REMOVE",
         key: key,
         deferred: ret
-    }
+    };
 
     // If the storageFrame is ready, post the message now, otherwise
     // this will be fired later
@@ -435,7 +433,7 @@ GlobalStorage.prototype.removeItem = function(key){
     }
 
     return ret;
-}
+};
 
 // Does this browesr support localStorage and postMessage
 GlobalStorage.isSupported = !!window.localStorage && !!window.postMessage;
@@ -443,7 +441,7 @@ GlobalStorage.isSupported = !!window.localStorage && !!window.postMessage;
 
 // Export a globalStorage singleton to window only if it's supported in this browser
 if(GlobalStorage.isSupported){
-    window["globalStorage"] = new GlobalStorage(config);
+    window.globalStorage = new GlobalStorage(config);
 }
 
 }())

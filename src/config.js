@@ -5,4 +5,4 @@
 var config = {
     storageFrameURL: "__iframeUrl__", // URL of the iframe
     storageFrameID: "__iframeID__" // ID of the iframe tag
-}
+};
