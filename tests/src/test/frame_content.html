@@ -11,10 +11,16 @@
             try{
                 var dataObj = JSON.parse(e.data);
                 if(dataObj.key){
-                    console.log(dataObj.data);
-                    globalStorage.getItem(dataObj.key).done(function(res){
-                        window.top.postMessage('{"value": "' + res + '"}', "*");
-                    });
+                    if(!dataObj.value){
+                        globalStorage.getItem(dataObj.key).done(function(res){
+                            window.top.postMessage('{"value": "' + res + '"}', "*");
+                        });
+                    } else{
+                        globalStorage.setItem(dataObj.key, dataObj.value).done(function(res){
+                            console.log("IFRAME RESULT: " + res);
+                            window.top.postMessage('{"value": "' + res + '"}', "*");
+                        });
+                    }
                 }
             } catch(e){}
         };

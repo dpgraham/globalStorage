@@ -14,7 +14,7 @@ var config = {
 
 // Throw an exception if no targetOrigin was provided
 if(!config.acceptableOrigin){
-    throw "You must provide a targetOrigin in the storageFrame"
+    throw "You must provide a targetOrigin in the storageFrame";
 }
 
 // Send a generic ping message to the parent announcing that the iframe is ready
@@ -27,7 +27,6 @@ var acceptableOrigins = config.acceptableOrigin.split(",");
  */
 function isAcceptableOrigin(origin){
     if(acceptableOrigins[0]=="*"){
-        console.log("acceptable");
         return true;
     }
 
@@ -74,6 +73,7 @@ window.onmessage = function(e){
 
             // Set request. Set the value and send back a message.
             localStorage.setItem(data.key, data.value);
+            res.value = data.value;
             window.parent.postMessage(JSON.stringify(res), e.origin);
 
         } else if(data.type==="REMOVE"){

@@ -197,7 +197,7 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
             if(res.type==="GET"){
                 transaction.deferred["resolved"](res.value);
             } else if(res.type==="SET" || res.type==="REMOVE"){
-                transaction.deferred["resolved"]();
+                transaction.deferred["resolved"](res.value);
             }
 
             // Null out the transaction
@@ -265,6 +265,7 @@ GlobalStorage.prototype._onReady = function(){
                     deferred["resolved"]();
                 }
             }(transaction.deferred));
+
         } else if(transaction.type==="GET"){
 
             // Call get item again

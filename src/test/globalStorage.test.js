@@ -13,6 +13,19 @@ suite('iframe storage testing', function(){
 
     };
 
+    var setLocalStorage = function(frameRef, key, value, callback){
+        var msg = '{"key": "' + key + '", "value": "' + value + '"}';
+        var cb = function(e){
+            var dataObj = JSON.parse(e.originalEvent.data);
+            if(dataObj.value){
+                $(window).unbind("message", cb);
+                callback(dataObj.value);
+            }
+        };
+        $(window).bind("message", cb);
+        $(frameRef)[0].contentWindow.postMessage(msg, "*");
+    };
+
     test('should instantiate an iframe', function(done){
         this.timeout(10000);
         window.ifr1 = $("<iframe>").attr({
@@ -48,5 +61,33 @@ suite('iframe storage testing', function(){
         });
     });
 
+    test('test setting a value', function(done){
+        this.timeout(10000);
+        setLocalStorage(window.ifr2, 'hello', 'whirl', function(data){
+            done();
+        });
+    });
+
+    test('test getting the value back', function(done){
+        this.timeout(10000);
+        getLocalStorage(window.ifr1, 'hello', function(data){
+            chai.assert.equal(data, "whirl");
+            done();
+        });
+    });
+
+    test('remove "hello"', function(done){
+        this.timeout(10000);
+        globalStorage.removeItem("hello").done(done);
+    });
+
+    test('check that hello was un-set', function(done){
+        this.timeout(10000);
+        getLocalStorage(window.ifr2, 'hello', function(data){
+            console.log("UNSET VALUE: " + data);
+            chai.assert.equal(JSON.parse(data), null);
+            done();
+        });
+    });
 
 });
