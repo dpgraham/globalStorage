@@ -5,8 +5,8 @@
  * @type {{iframeUrl: string, iframeID: string}}
  */
 var config = {
-    storageFrameURL: "", // URL of the iframe
-    storageFrameID: "" // ID of the iframe tag
+    storageFrameURL: "http://localhost:9001/tests/assets/storageFrame.html", // URL of the iframe
+    storageFrameID: "__iframeID__" // ID of the iframe tag
 }
 
 /**

@@ -39,8 +39,7 @@ module.exports = function(grunt){
                 dest: 'tests/globalStorage.js',
                 options: {
                     process: function(content, srcpath){
-                        content = content.replace("__iframeUrl__", "/tests/assets/storageFrame.html");
-
+                        content = content.replace("__iframeUrl__", "http://localhost:9001/tests/assets/storageFrame.html");
                         return content;
                     }
                 }
@@ -81,16 +80,21 @@ module.exports = function(grunt){
                         content = content.replace(/__DOMAIN_ONE__/g, "/");
                         content = content.replace(/__DOMAIN_TWO__/g, "/");
                         content = content.replace(/__PHANTOM__/g, false);
+                        content = content.replace("__FRAME_DOMAIN__", "/");
                         return content;
                     }
                 }
             },
 
             test_phantom: {
-                files: [{src: "src/test/test_config.js", dest: "tests/"}],
+                files: [
+                    {src: "src/test/test_config.js", dest: "tests/"},
+                    {src: "src/test/frame_content.html", dest: "tests/"}
+                ],
                 options: {
                     process: function(content){
                         content = content.replace(/__PHANTOM__/g, true);
+                        content = content.replace(/__FRAME_DOMAIN__/g, "http://localhost:9001/");
                         return content;
                     }
                 }
@@ -108,19 +112,22 @@ module.exports = function(grunt){
             site1: {
                 options: {
                     port: 9001,
-                    base: './'
+                    base: './',
+                    keepalive: grunt.option("keepalive") || false
                 }
             },
             site2: {
                 options: {
                     port: 9002,
-                    base: './'
+                    base: './',
+                    keepalive: grunt.option("keepalive") || false
                 }
             },
             site3: {
                 options: {
                     port: 9003,
-                    base: './'
+                    base: './',
+                    keepalive: grunt.option("keepalive") || false
                 }
             }
         },
@@ -139,6 +146,11 @@ module.exports = function(grunt){
             test_build: {
                 files: ["src/**/*.js", "src/**/*.html"],
                 tasks: ['test_build']
+            },
+
+            test_phantom: {
+                files: ["src/**/*.js", "src/**/*.html"],
+                tasks: ['test_phantom']
             }
         }
     });
@@ -149,5 +161,6 @@ module.exports = function(grunt){
     grunt.registerTask('test_phantom', ['connect:site1', 'connect:site2', 'connect:site3', 'test_build_phantom', 'mocha_phantomjs']);
     grunt.registerTask('test_server', ['connect:site0']);
     grunt.registerTask('watchTest', []);
+    grunt.registerTask('travis', ['test_phantom']);
 
 }
