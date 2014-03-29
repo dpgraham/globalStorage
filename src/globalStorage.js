@@ -255,32 +255,26 @@ GlobalStorage.prototype._onReady = function(){
 
 
     // Fire off any pending transactions
-
     var doneCallback = function(deferred){
         return function(result){
             deferred.resolved(result);
         };
     };
 
-
     for(var transaction in this._transactions){
         transaction = this._transactions[transaction];
 
         if(transaction.type==="SET"){
-
-            // Call set item again
             this.setItem(transaction.key, transaction.value).done(doneCallback(transaction.deferred));
 
         } else if(transaction.type==="GET"){
-
-            // Call get item again
             this.getItem(transaction.key).done(doneCallback(transaction.deferred));
 
         } else if(transaction.type==="REMOVE"){
-
-            // Call get item again
             this.removeItem(transaction.key).done(doneCallback(transaction.deferred));
         }
+
+        this._transactions[transaction] = null;
     }
 };
 
