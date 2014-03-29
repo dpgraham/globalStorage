@@ -64,13 +64,15 @@ suite('iframe storage testing', function(){
     test('test setting a value', function(done){
         this.timeout(10000);
         setLocalStorage(window.ifr2, 'hello', 'whirl', function(data){
-            done();
+            console.log("Finished setting 'hello' to 'whirl'");
+            setTimeout(done, 100);
         });
     });
 
     test('test getting the value back', function(done){
         this.timeout(10000);
         getLocalStorage(window.ifr1, 'hello', function(data){
+            console.log("Retrieving 'hello' to 'whirl'");
             chai.assert.equal(data, "whirl");
             done();
         });
