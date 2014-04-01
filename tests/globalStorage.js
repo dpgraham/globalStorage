@@ -1,5 +1,4 @@
 (function(){
-
 /**
  * Object that holds iframeURL and iframeID. At least one of these must be defined.
  * @type {{iframeUrl: string, iframeID: string}}
@@ -8,7 +7,6 @@ var config = {
     storageFrameURL: "http://localhost:9001/tests/assets/storageFrame.html", // URL of the iframe
     storageFrameID: "__iframeID__" // ID of the iframe tag
 };
-
 /**
  * Deferred object that behaves similarly to jQuery deferred
  * @constructor

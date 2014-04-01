@@ -99,6 +99,20 @@ module.exports = function(grunt){
                         return content;
                     }
                 }
+            },
+
+            test_forbidden_frame: {
+                files: [
+                    { cwd: 'assets', expand: true, src: "storageFrame.html", dest: "tests/assets/forbidden_frame/" }
+                ],
+
+                options: {
+                    process: function(content, srcpath){
+                        var storageFrameJS = grunt.file.read('src/storageFrame/storageFrame.js');
+                        content = content.replace("__STORAGEFRAMEJS__", storageFrameJS);
+                        return content.replace("__DOMAINS__", "http://www.domain.com");
+                    }
+                }
             }
         },
 
@@ -161,8 +175,8 @@ module.exports = function(grunt){
     });
 
     grunt.registerTask('default', ['copy', 'concat']);
-    grunt.registerTask('test_build', ['jshint', 'copy:test', 'concat:test']);
-    grunt.registerTask('test_build_phantom', ['jshint', 'copy:test', 'concat:test', 'copy:test_phantom']);
+    grunt.registerTask('test_build', ['jshint', 'copy:test', 'concat:test', 'copy:test_forbidden_frame']);
+    grunt.registerTask('test_build_phantom', ['jshint', 'copy:test', 'concat:test', 'copy:test_forbidden_frame', 'copy:test_phantom']);
     grunt.registerTask('test_phantom', ['jshint', 'connect:site1', 'connect:site2', 'connect:site3', 'test_build_phantom', 'mocha_phantomjs']);
     grunt.registerTask('test_server', ['connect:site0']);
     grunt.registerTask('travis', ['test_phantom']);

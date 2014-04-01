@@ -1,4 +1,43 @@
-suite('iframe storage testing', function(){
+suite('iframe testing', function(){
+
+    test("set 'hello' to 'world'", function(done){
+        globalStorage.setItem("hello", "world").done(function(res){
+            chai.assert.equal(res, "world");
+            done();
+        });
+    });
+
+    test("get 'hello'", function(done){
+        globalStorage.getItem("hello").done(function(res){
+            chai.assert.equal(res, "world");
+            done();
+        });
+    });
+
+    test("remove 'hello'", function(done){
+        globalStorage.removeItem("hello").done(function(res){
+            chai.assert.equal(!res, true);
+            done();
+        });
+    });
+
+    test("get 'hello' is empty", function(done){
+        globalStorage.getItem("hello").done(function(res){
+            chai.assert.equal(!res, true);
+            done();
+        });
+    });
+
+    test("set 'hello' again", function(done){
+        globalStorage.setItem("hello", "whirl").done(function(res){
+            chai.assert.equal(res, "whirl");
+            done();
+        });
+    });
+
+});
+
+suite('iframe storage testing on different iframes', function(){
     var getLocalStorage = function(frameRef, key, callback){
         var msg = '{"key": "' + key + '"}';
         var cb = function(e){
@@ -65,6 +104,8 @@ suite('iframe storage testing', function(){
         this.timeout(10000);
         setLocalStorage(window.ifr2, 'hello', 'whirl', function(data){
             console.log("Finished setting 'hello' to 'whirl'");
+
+            // Wait a bit to avoid race conditions
             setTimeout(done, 100);
         });
     });

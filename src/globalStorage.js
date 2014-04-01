@@ -165,8 +165,6 @@ GlobalStorage.prototype._onDocumentReady = function(){
         };
     }(this);
 
-    // Start a five second timer that waits for the storage iframe to load
-    this._timeoutForStorageFrameReady = setTimeout(onFail, 3000);
     window.onbeforeunload = onFail;
 };
 
@@ -215,13 +213,10 @@ GlobalStorage.prototype._onStorageFrameMessage = function(data){
  */
 GlobalStorage.prototype._onStorageFrameReady = function(data){
     // Don't call this twice
-    if(this._storageFrameReady){
+    if(this._storageFrameReady)
         return;
-    }
-    this._storageFrameReady = true;
 
-    // Cancel the timeout that's called if the storage frame is not ready in 5 seconds
-    // clearTimeout(this._timeoutForStorageFrameReady);
+    this._storageFrameReady = true;
 
     // Call checkReady to see if the storageFrame and document are both ready
     this._checkReady();
