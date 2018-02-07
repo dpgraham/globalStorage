@@ -3,6 +3,8 @@
 globalStorage
 =============
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/dpgraham/globalStorage.svg)](https://greenkeeper.io/)
+
 Utilizes postMessage API and localStorage to allow storage across domains
 
 
